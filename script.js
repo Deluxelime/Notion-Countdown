@@ -14,7 +14,6 @@ const elements = {
 	eventOptions: document.getElementById('event-options'),
 	newCountdown: document.getElementById('new-countdown-button'),
 	deleteCountdown: document.getElementById('delete-countdown-button'),
-	themeButton: document.getElementById('theme-button'),
 	viewButton: document.getElementById('view-button'),
 	themeSelect: document.getElementById('theme-select'),
 	displayFormat: document.getElementById('display-format'),
@@ -306,7 +305,6 @@ elements.deleteCountdown.addEventListener('click', () => {
 	saveState();
 });
 
-elements.themeButton.addEventListener('click', () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; render(); saveState(); });
 elements.viewButton.addEventListener('click', () => { state.viewMode = state.viewMode === 'countdown' ? 'regular' : 'countdown'; render(); saveState(); });
 elements.themeSelect.addEventListener('change', () => { state.theme = elements.themeSelect.value; render(); saveState(); });
 elements.displayFormat.addEventListener('change', () => { state.displayFormat = elements.displayFormat.value; render(); saveState(); });
