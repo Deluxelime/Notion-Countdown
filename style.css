@@ -19,6 +19,7 @@ body {
 	display: grid;
 	place-items: center;
 	padding: 24px;
+	overflow-x: hidden;
 	color: var(--ink);
 	background: var(--page-color);
 	font-family: Georgia, 'Times New Roman', serif;
@@ -37,19 +38,13 @@ body[data-theme="dark"] {
 
 main {
 	width: min(760px, 100%);
+	min-width: 0;
 	padding: clamp(24px, 6vw, 58px);
 	background: color-mix(in srgb, var(--paper) 94%, transparent);
 	border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
 	border-radius: 8px;
 	box-shadow: var(--shadow);
-}
-
-.brand-logo {
-	display: block;
-	width: auto;
-	max-width: 100%;
-	max-height: 56px;
-	margin-bottom: 22px;
+	container-type: inline-size;
 }
 
 .eyebrow, .section-kicker {
@@ -66,6 +61,8 @@ main {
 	justify-content: space-between;
 	gap: 16px;
 }
+
+.heading-row > div { min-width: 0; }
 
 h1 {
 	margin: 0;
@@ -85,7 +82,7 @@ h2 { margin: 0; font-size: 1.3rem; }
 .text-button { color: var(--accent-dark); background: transparent; font-size: 0.76rem; }
 .danger-button { color: var(--accent-dark); background: transparent; }
 
-.countdown-bar { margin-top: 28px; padding: 10px; background: color-mix(in srgb, var(--accent) 8%, transparent); border: 1px solid var(--line); border-radius: 6px; }
+.countdown-bar { flex-wrap: wrap; margin-top: 28px; padding: 10px; background: color-mix(in srgb, var(--accent) 8%, transparent); border: 1px solid var(--line); border-radius: 6px; }
 .countdown-bar select { flex: 1; min-width: 0; }
 
 .target-label { display: block; margin: 28px 0 8px; color: var(--muted); font: 700 0.76rem/1.2 Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
@@ -134,7 +131,7 @@ body[data-format="compact"] .unit-label::after { font-size: 0.68rem; content: at
 .controls { display: flex; justify-content: center; gap: 12px; }
 
 .settings-panel { margin-top: 34px; padding-top: 24px; border-top: 1px solid var(--line); }
-.settings-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+.settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 18px; }
 .settings-grid label { color: var(--muted); font: 700 0.7rem Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.06em; }
 .settings-grid input, .settings-grid select { display: block; margin-top: 7px; text-transform: none; letter-spacing: 0; }
 .check-row { display: flex; align-items: center; gap: 8px; margin-top: 16px; color: var(--muted); font: 0.78rem Arial, sans-serif; }
@@ -143,13 +140,64 @@ body[data-format="compact"] .unit-label::after { font-size: 0.68rem; content: at
 @media (max-width: 600px) {
 	body { padding: 12px; }
 	main { padding: 24px 18px; }
-	.settings-grid { grid-template-columns: repeat(2, 1fr); }
 	.timer { gap: 6px; }
 	.unit { padding-inline: 4px; }
 	.duration-picker, .settings-heading { align-items: stretch; flex-direction: column; }
 	.presets { grid-template-columns: repeat(3, 1fr); }
 	.controls { flex-direction: column; }
 	.controls button { width: 100%; }
+}
+
+@container (max-width: 560px) {
+	main { padding: 24px 18px; }
+	.heading-row, .settings-heading { align-items: flex-start; }
+	.countdown-bar select { flex-basis: 100%; }
+	.duration-picker { flex-direction: column; }
+	.settings-heading { flex-direction: column; }
+	.controls { flex-direction: column; }
+	.controls button { width: 100%; }
+}
+
+@container (max-width: 390px) {
+	main { padding: 18px 14px; }
+	.heading-row { gap: 10px; }
+	h1 { font-size: 2.4rem; }
+	.timer { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+	.presets { grid-template-columns: repeat(3, 1fr); }
+	.countdown-bar button { flex: 1 1 auto; }
+}
+
+@container (max-width: 300px) {
+	main { padding: 14px 10px; }
+	.brand-logo { max-height: 40px; margin-bottom: 14px; }
+	.eyebrow, .section-kicker { font-size: 0.62rem; }
+	h1 { font-size: 2rem; }
+	.countdown-meta { font-size: 0.76rem; }
+	.target-label { margin-top: 18px; font-size: 0.66rem; }
+	.mode-switch { margin-top: 18px; }
+	.mode-button { padding: 10px 6px; font-size: 0.76rem; }
+	.countdown-bar { gap: 6px; margin-top: 18px; padding: 7px; }
+	.countdown-bar button { width: 100%; flex-basis: 100%; }
+	.settings-panel { margin-top: 24px; padding-top: 18px; }
+	.settings-grid { grid-template-columns: 1fr; }
+	.settings-heading .text-button { width: 100%; }
+	.timer { grid-template-columns: repeat(2, 1fr); margin: 22px 0 18px; }
+	.value { font-size: 1.7rem; }
+	.unit { padding: 12px 4px 10px; }
+	.unit-label { font-size: 0.58rem; letter-spacing: 0.04em; }
+	.duration-picker button, .controls button { width: 100%; min-width: 0; }
+}
+
+@media (max-height: 600px) {
+	body { padding-block: 8px; }
+	main { padding-block: 16px; }
+	.countdown-bar, .mode-switch { margin-top: 14px; }
+	.target-label { margin-top: 16px; }
+	.timer { margin-block: 16px; }
+	.unit { padding-block: 10px 8px; }
+	.settings-panel { margin-top: 20px; padding-top: 14px; }
+	.status { margin-bottom: 10px; }
+	.save-status { margin-bottom: 10px; }
 }
 
 @media (max-width: 380px) {
