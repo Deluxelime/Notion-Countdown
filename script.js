@@ -293,3 +293,4 @@ else if (restored.mode === 'duration' && restored.remainingSeconds > 0) {
 	restored.endTime = restored.endTime || Date.now() + restored.remainingSeconds * 1000;
 	timerId = setInterval(updateCountdown, 1000);
 }
+
