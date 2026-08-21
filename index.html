@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Countdown</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<p class="eyebrow">Make time visible</p>
+<h1 id="event-title">Countdown</h1>
+
+<label class="target-label" for="event-name">Event name</label>
+<input id="event-name" type="text" maxlength="60" placeholder="Name your countdown" aria-describedby="save-status">
+
+<div class="mode-switch" aria-label="Countdown mode">
+<button class="mode-button active" type="button" data-mode="date">Target date</button>
+<button class="mode-button" type="button" data-mode="duration">Duration timer</button>
+</div>
+
+<div id="date-panel" class="mode-panel">
+<label class="target-label" for="target-date">Set a target date and time</label>
+<div class="duration-picker">
+<input id="target-date" type="date" aria-label="Target date" aria-describedby="status">
+<input id="target-time" type="time" aria-label="Target time" aria-describedby="status">
+</div>
+</div>
+
+<div id="duration-panel" class="mode-panel hidden">
+<label class="target-label" for="duration-input">Set a duration in minutes</label>
+<div class="duration-picker">
+<input id="duration-input" type="number" min="1" step="1" placeholder="Custom minutes" aria-describedby="status">
+<button id="start-button" type="button">Start</button>
+</div>
+<div class="presets" aria-label="Timer presets">
+<button class="preset" type="button" data-minutes="5">5 min</button>
+<button class="preset" type="button" data-minutes="10">10 min</button>
+<button class="preset" type="button" data-minutes="25">25 min</button>
+<button class="preset" type="button" data-minutes="45">45 min</button>
+<button class="preset" type="button" data-minutes="60">60 min</button>
+</div>
+</div>
+
+<section class="timer" aria-label="Time remaining">
+<div class="unit"><span class="value" id="days">00</span><span class="unit-label">Days</span></div>
+<div class="unit"><span class="value" id="hours">00</span><span class="unit-label">Hours</span></div>
+<div class="unit"><span class="value" id="minutes">00</span><span class="unit-label">Minutes</span></div>
+<div class="unit"><span class="value" id="seconds">00</span><span class="unit-label">Seconds</span></div>
+</section>
+
+<p class="status" id="status" role="status">Choose a target date to begin.</p>
+<p class="save-status" id="save-status" role="status" aria-live="polite">Configuration saves automatically.</p>
+
+<div class="controls">
+<button id="pause-button" type="button" disabled>Pause</button>
+<button id="reset-button" type="button">Reset</button>
+</div>
+</main>
+
+<script src="script.js" defer></script>
+</body>
+</html>
