@@ -47,6 +47,15 @@
 <button id="start-button" type="button">Start</button>
 </div>
 
+<div class="presets" aria-label="Timer presets">
+<button class="preset" type="button" data-minutes="5">5 min</button>
+<button class="preset" type="button" data-minutes="10">10 min</button>
+<button class="preset" type="button" data-minutes="25">25 min</button>
+<button class="preset" type="button" data-minutes="45">45 min</button>
+<button class="preset" type="button" data-minutes="60">60 min</button>
+</div>
+</div>
+
 <section class="settings-panel" aria-label="Appearance and notification settings">
 <div class="settings-heading">
 <div>
@@ -57,20 +66,12 @@
 </div>
 <div class="settings-grid">
 <label>Theme<select id="theme-select"><option value="light">Light</option><option value="dark">Dark</option></select></label>
-<label>Display<select id="display-format"><option value="full">Full labels</option><option value="compact">Compact labels</option><option value="clock">Clock style</option></select></label>
-<label>Accent color<input id="accent-color" type="color" value="#e85d04"></label>
-<label>Background<input id="background-color" type="color" value="#f6f1e8"></label>
+<label>Display<select id="display-format"><option value="full">Full labels</option><option value="clock">Clock style</option></select></label>
+<label>Accent color<input id="accent-color" type="color" value="#191919"></label>
+<label>Background<input id="background-color" type="color" value="#ffffff"></label>
 </div>
 <label class="check-row"><input id="sound-toggle" type="checkbox" checked> Play a sound when the timer ends</label>
 </section>
-<div class="presets" aria-label="Timer presets">
-<button class="preset" type="button" data-minutes="5">5 min</button>
-<button class="preset" type="button" data-minutes="10">10 min</button>
-<button class="preset" type="button" data-minutes="25">25 min</button>
-<button class="preset" type="button" data-minutes="45">45 min</button>
-<button class="preset" type="button" data-minutes="60">60 min</button>
-</div>
-</div>
 
 <section class="timer" aria-label="Time remaining">
 <div class="unit"><span class="value" id="days">00</span><span class="unit-label" data-short="d">Days</span></div>

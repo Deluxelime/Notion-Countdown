@@ -49,10 +49,10 @@ function createCountdown(name = 'Countdown') {
 }
 
 function loadState() {
-	const fallback = { theme: 'light', displayFormat: 'full', accent: '#e85d04', background: '#f6f1e8', sound: true, activeId: '', countdowns: [] };
+	const fallback = { theme: 'light', displayFormat: 'full', accent: '#191919', background: '#ffffff', sound: true, activeId: '', countdowns: [] };
 	try {
 		const saved = JSON.parse(localStorage.getItem(storageKey));
-		if (saved && Array.isArray(saved.countdowns) && saved.countdowns.length > 0) return { ...fallback, ...saved, countdowns: saved.countdowns };
+		if (saved && Array.isArray(saved.countdowns) && saved.countdowns.length > 0) return { ...fallback, ...saved, displayFormat: saved.displayFormat === 'clock' ? 'clock' : 'full', countdowns: saved.countdowns };
 		if (saved) {
 			const legacy = createCountdown(saved.eventName || 'Countdown');
 			Object.assign(legacy, saved);
