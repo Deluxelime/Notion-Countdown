@@ -7,19 +7,21 @@ const elements = {
 	durationPanel: document.getElementById('duration-panel'),
 	reset: document.getElementById('reset-button'),
 	status: document.getElementById('status'),
-	eventName: document.getElementById('event-name'),
 	title: document.getElementById('event-title'),
-	meta: document.getElementById('countdown-meta'),
 	saveStatus: document.getElementById('save-status'),
 	select: document.getElementById('countdown-select'),
+	eventMenuButton: document.getElementById('event-menu-button'),
+	eventOptions: document.getElementById('event-options'),
 	newCountdown: document.getElementById('new-countdown-button'),
 	deleteCountdown: document.getElementById('delete-countdown-button'),
 	themeButton: document.getElementById('theme-button'),
+	viewButton: document.getElementById('view-button'),
 	themeSelect: document.getElementById('theme-select'),
 	displayFormat: document.getElementById('display-format'),
 	accentColor: document.getElementById('accent-color'),
 	backgroundColor: document.getElementById('background-color'),
 	soundToggle: document.getElementById('sound-toggle'),
+	titleToggle: document.getElementById('title-toggle'),
 	notificationButton: document.getElementById('notification-button'),
 	values: {
 		days: document.getElementById('days'),
@@ -49,14 +51,14 @@ function createCountdown(name = 'Countdown') {
 }
 
 function loadState() {
-	const fallback = { theme: 'light', displayFormat: 'full', accent: '#191919', background: '#ffffff', sound: true, activeId: '', countdowns: [] };
+	const fallback = { viewMode: 'regular', showCountdownTitle: true, theme: 'light', displayFormat: 'full', accent: '#191919', background: '#ffffff', sound: true, activeId: '', countdowns: [] };
 	try {
 		const saved = JSON.parse(localStorage.getItem(storageKey));
-		if (saved && Array.isArray(saved.countdowns) && saved.countdowns.length > 0) return { ...fallback, ...saved, displayFormat: saved.displayFormat === 'clock' ? 'clock' : 'full', countdowns: saved.countdowns };
+		if (saved && Array.isArray(saved.countdowns) && saved.countdowns.length > 0) return { ...fallback, ...saved, showCountdownTitle: saved.showCountdownTitle !== false, viewMode: saved.viewMode === 'countdown' ? 'countdown' : 'regular', displayFormat: saved.displayFormat === 'clock' ? 'clock' : 'full', countdowns: saved.countdowns };
 		if (saved) {
 			const legacy = createCountdown(saved.eventName || 'Countdown');
 			Object.assign(legacy, saved);
-			return { ...fallback, ...saved, activeId: legacy.id, countdowns: [legacy] };
+			return { ...fallback, ...saved, showCountdownTitle: saved.showCountdownTitle !== false, viewMode: saved.viewMode === 'countdown' ? 'countdown' : 'regular', displayFormat: saved.displayFormat === 'clock' ? 'clock' : 'full', activeId: legacy.id, countdowns: [legacy] };
 		}
 	} catch (error) {
 		elements.saveStatus.textContent = 'Configuration could not be restored.';
@@ -105,14 +107,20 @@ function stopTimer() {
 function updateTitle() {
 	const countdown = currentCountdown();
 	elements.title.textContent = countdown.name.trim() || 'Countdown';
-	elements.eventName.value = countdown.name;
-	elements.meta.textContent = countdown.mode === 'date' ? 'Your next moment, made visible.' : 'A little time, held for you.';
+	elements.select.value = countdown.name;
 }
 
 function renderCountdownList() {
-	elements.select.innerHTML = state.countdowns.map((countdown) => `<option value="${countdown.id}">${escapeHtml(countdown.name.trim() || 'Untitled countdown')}</option>`).join('');
-	elements.select.value = state.activeId;
+	elements.eventOptions.innerHTML = state.countdowns.map((countdown) => {
+		const name = countdown.name.trim() || 'Untitled countdown';
+		return `<button class="event-option" type="button" role="option" data-id="${countdown.id}">${escapeHtml(name)}</button>`;
+	}).join('');
 	elements.deleteCountdown.disabled = state.countdowns.length === 1;
+}
+
+function toggleEventMenu(isOpen) {
+	elements.eventOptions.hidden = !isOpen;
+	elements.eventMenuButton.setAttribute('aria-expanded', String(isOpen));
 }
 
 function escapeHtml(value) {
@@ -230,7 +238,12 @@ function render() {
 	elements.accentColor.value = state.accent;
 	elements.backgroundColor.value = state.background;
 	elements.soundToggle.checked = state.sound;
+	elements.titleToggle.checked = state.showCountdownTitle;
 	document.body.dataset.theme = state.theme;
+	document.body.dataset.view = state.viewMode;
+	document.body.dataset.showTitle = state.showCountdownTitle ? 'true' : 'false';
+	elements.viewButton.setAttribute('aria-label', state.viewMode === 'countdown' ? 'Switch to Regular view' : 'Switch to Countdown view');
+	elements.viewButton.setAttribute('title', state.viewMode === 'countdown' ? 'Switch to Regular view' : 'Switch to Countdown view');
 	document.documentElement.style.setProperty('--accent', state.accent);
 	document.documentElement.style.setProperty('--page-color', state.background);
 	showTime(countdown.remainingSeconds);
@@ -242,13 +255,6 @@ document.querySelectorAll('.mode-button').forEach((button) => button.addEventLis
 	applyMode();
 }));
 
-elements.eventName.addEventListener('input', () => {
-	currentCountdown().name = elements.eventName.value;
-	updateTitle();
-	renderCountdownList();
-	saveState();
-});
-
 elements.targetDate.addEventListener('change', () => { currentCountdown().targetDate = elements.targetDate.value; startCountdown(); saveState(); });
 elements.targetTime.addEventListener('change', () => { currentCountdown().targetTime = elements.targetTime.value; startCountdown(); saveState(); });
 elements.duration.addEventListener('input', () => { currentCountdown().duration = elements.duration.value; saveState(); });
@@ -257,7 +263,33 @@ elements.start.addEventListener('click', startDurationTimer);
 document.querySelectorAll('.preset').forEach((button) => button.addEventListener('click', () => { currentCountdown().duration = button.dataset.minutes; elements.duration.value = button.dataset.minutes; startDurationTimer(); }));
 
 elements.reset.addEventListener('click', () => resetTimer(true));
-elements.select.addEventListener('change', () => { stopTimer(); state.activeId = elements.select.value; render(); saveState(); });
+elements.eventMenuButton.addEventListener('click', () => toggleEventMenu(elements.eventOptions.hidden));
+elements.eventOptions.addEventListener('click', (event) => {
+	const option = event.target.closest('.event-option');
+	if (!option) return;
+	stopTimer();
+	state.activeId = option.dataset.id;
+	toggleEventMenu(false);
+	render();
+	saveState();
+});
+elements.select.addEventListener('change', () => {
+	const enteredName = elements.select.value.trim();
+	const selected = state.countdowns.find((countdown) => countdown.name.trim() === enteredName);
+	if (selected && selected.id !== state.activeId) {
+		stopTimer();
+		state.activeId = selected.id;
+		render();
+	} else if (!selected && enteredName) {
+		currentCountdown().name = enteredName;
+		updateTitle();
+		renderCountdownList();
+	}
+	saveState();
+});
+document.addEventListener('click', (event) => {
+	if (!event.target.closest('.event-picker')) toggleEventMenu(false);
+});
 elements.newCountdown.addEventListener('click', () => {
 	const countdown = createCountdown(`Countdown ${state.countdowns.length + 1}`);
 	state.countdowns.push(countdown);
@@ -275,15 +307,25 @@ elements.deleteCountdown.addEventListener('click', () => {
 });
 
 elements.themeButton.addEventListener('click', () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; render(); saveState(); });
+elements.viewButton.addEventListener('click', () => { state.viewMode = state.viewMode === 'countdown' ? 'regular' : 'countdown'; render(); saveState(); });
 elements.themeSelect.addEventListener('change', () => { state.theme = elements.themeSelect.value; render(); saveState(); });
 elements.displayFormat.addEventListener('change', () => { state.displayFormat = elements.displayFormat.value; render(); saveState(); });
 elements.accentColor.addEventListener('input', () => { state.accent = elements.accentColor.value; render(); saveState(); });
 elements.backgroundColor.addEventListener('input', () => { state.background = elements.backgroundColor.value; render(); saveState(); });
 elements.soundToggle.addEventListener('change', () => { state.sound = elements.soundToggle.checked; saveState(); });
+elements.titleToggle.addEventListener('change', () => { state.showCountdownTitle = elements.titleToggle.checked; render(); saveState(); });
 elements.notificationButton.addEventListener('click', async () => {
 	if (!('Notification' in window)) { elements.notificationButton.textContent = 'Notifications unavailable'; return; }
 	const permission = await Notification.requestPermission();
 	elements.notificationButton.textContent = permission === 'granted' ? 'Notifications enabled' : 'Notifications blocked';
+});
+
+document.addEventListener('keydown', (event) => {
+	if (event.key.toLowerCase() === 'v' && !['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+		state.viewMode = state.viewMode === 'countdown' ? 'regular' : 'countdown';
+		render();
+		saveState();
+	}
 });
 
 render();

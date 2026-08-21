@@ -16,6 +16,7 @@ The widget works inside an iframe and saves its event name, target, mode, and ti
 - **Duration timer** supports a custom number of minutes or a preset.
 - **Pause** freezes a duration timer; **Reset** clears the current configuration.
 - Add and switch between multiple saved countdowns from the countdown menu.
+- Use **Regular** view for configuration or **Countdown** view to show only the title and timer. Press `V` to switch views while Countdown view is active.
 - Choose light or dark mode, custom accent/background colors, and full or clock-style displays.
 - Enable a completion sound and request browser notifications for finished timers.
 

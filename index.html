@@ -8,24 +8,26 @@
 </head>
 <body>
 <main>
-<p class="eyebrow">Make time visible</p>
 <div class="heading-row">
 <div>
 <h1 id="event-title">Countdown</h1>
-<p class="countdown-meta" id="countdown-meta">Your next moment, made visible.</p>
 </div>
+<div class="heading-actions">
 <button id="theme-button" class="icon-button" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">D/L</button>
+<button id="view-button" class="view-button" type="button" aria-label="Switch to Countdown view" title="Switch view"></button>
+</div>
 </div>
 
-<section class="countdown-bar" aria-label="Saved countdowns">
-<label class="sr-only" for="countdown-select">Choose a countdown</label>
-<select id="countdown-select"></select>
+<section class="countdown-bar event-bar" aria-label="Event settings">
+<label class="sr-only" for="countdown-select">Choose or name a countdown</label>
+<div class="event-picker">
+<input id="countdown-select" type="text" maxlength="60" placeholder="Choose or name a countdown" aria-describedby="save-status">
+<button id="event-menu-button" class="event-menu-button" type="button" aria-label="Show saved countdowns" aria-expanded="false">⌄</button>
+<div id="event-options" class="event-options" role="listbox" hidden></div>
+</div>
 <button id="new-countdown-button" class="small-button" type="button">+ New</button>
 <button id="delete-countdown-button" class="small-button danger-button" type="button">Delete</button>
 </section>
-
-<label class="target-label" for="event-name">Event name</label>
-<input id="event-name" type="text" maxlength="60" placeholder="Name your countdown" aria-describedby="save-status">
 
 <div class="mode-switch" aria-label="Countdown mode">
 <button class="mode-button active" type="button" data-mode="date">Target date</button>
@@ -56,12 +58,10 @@
 </div>
 </div>
 
-<section class="settings-panel" aria-label="Appearance and notification settings">
+<details class="settings-panel">
+<summary class="settings-summary">Personalize <span aria-hidden="true"></span></summary>
+<div class="settings-content" aria-label="Appearance and notification settings">
 <div class="settings-heading">
-<div>
-<p class="section-kicker">Personalize</p>
-<h2>Make it yours</h2>
-</div>
 <button id="notification-button" class="text-button" type="button">Enable notifications</button>
 </div>
 <div class="settings-grid">
@@ -71,7 +71,9 @@
 <label>Background<input id="background-color" type="color" value="#ffffff"></label>
 </div>
 <label class="check-row"><input id="sound-toggle" type="checkbox" checked> Play a sound when the timer ends</label>
-</section>
+<label class="check-row"><input id="title-toggle" type="checkbox" checked> Show title in Countdown view</label>
+</div>
+</details>
 
 <section class="timer" aria-label="Time remaining">
 <div class="unit"><span class="value" id="days">00</span><span class="unit-label" data-short="d">Days</span></div>
