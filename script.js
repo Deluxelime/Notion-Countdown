@@ -5,7 +5,6 @@ const elements = {
 	start: document.getElementById('start-button'),
 	datePanel: document.getElementById('date-panel'),
 	durationPanel: document.getElementById('duration-panel'),
-	pause: document.getElementById('pause-button'),
 	reset: document.getElementById('reset-button'),
 	status: document.getElementById('status'),
 	eventName: document.getElementById('event-name'),
@@ -44,7 +43,6 @@ function createCountdown(name = 'Countdown') {
 		targetTime: '',
 		duration: '',
 		endTime: null,
-		isPaused: false,
 		remainingSeconds: 0,
 		finished: false
 	};
@@ -130,7 +128,7 @@ function applyMode() {
 
 function updateCountdown() {
 	const countdown = currentCountdown();
-	if (!countdown || countdown.isPaused || countdown.remainingSeconds <= 0) return;
+	if (!countdown || countdown.remainingSeconds <= 0) return;
 	countdown.remainingSeconds = countdown.endTime === null ? countdown.remainingSeconds - 1 : Math.max(0, Math.ceil((countdown.endTime - Date.now()) / 1000));
 	showTime(countdown.remainingSeconds);
 	if (countdown.remainingSeconds <= 0) finishTimer();
@@ -141,7 +139,6 @@ function finishTimer() {
 	stopTimer();
 	countdown.endTime = null;
 	countdown.finished = true;
-	elements.pause.disabled = true;
 	elements.status.textContent = 'Timer finished.';
 	elements.status.classList.add('finished');
 	if (state.sound) playFinishSound();
@@ -168,13 +165,10 @@ function playFinishSound() {
 function startTimer(seconds) {
 	const countdown = currentCountdown();
 	stopTimer();
-	countdown.isPaused = false;
 	countdown.finished = false;
 	countdown.remainingSeconds = seconds;
 	countdown.endTime = Date.now() + seconds * 1000;
 	elements.status.classList.remove('finished');
-	elements.pause.disabled = false;
-	elements.pause.textContent = 'Pause';
 	elements.status.textContent = countdown.mode === 'date' ? 'Counting down to your target...' : 'Timer running...';
 	showTime(seconds);
 	timerId = setInterval(updateCountdown, 1000);
@@ -189,7 +183,6 @@ function startCountdown() {
 		countdown.endTime = null;
 		countdown.remainingSeconds = 0;
 		showTime(0);
-		elements.pause.disabled = true;
 		elements.status.textContent = 'Choose a future target date.';
 		elements.status.classList.add('finished');
 		return;
@@ -200,7 +193,6 @@ function startCountdown() {
 function startDurationTimer() {
 	const minutes = Number(currentCountdown().duration);
 	if (!Number.isFinite(minutes) || minutes <= 0) {
-		elements.pause.disabled = true;
 		elements.status.textContent = 'Enter a duration greater than zero.';
 		return;
 	}
@@ -212,10 +204,7 @@ function resetTimer(clearInputs = false) {
 	stopTimer();
 	countdown.remainingSeconds = 0;
 	countdown.endTime = null;
-	countdown.isPaused = false;
 	countdown.finished = false;
-	elements.pause.disabled = true;
-	elements.pause.textContent = 'Pause';
 	elements.status.textContent = countdown.mode === 'date' ? 'Choose a target date to begin.' : 'Choose a duration to begin.';
 	elements.status.classList.remove('finished');
 	if (clearInputs) {
@@ -267,19 +256,6 @@ elements.duration.addEventListener('keydown', (event) => { if (event.key === 'En
 elements.start.addEventListener('click', startDurationTimer);
 document.querySelectorAll('.preset').forEach((button) => button.addEventListener('click', () => { currentCountdown().duration = button.dataset.minutes; elements.duration.value = button.dataset.minutes; startDurationTimer(); }));
 
-elements.pause.addEventListener('click', () => {
-	const countdown = currentCountdown();
-	if (countdown.remainingSeconds <= 0) return;
-	countdown.isPaused = !countdown.isPaused;
-	if (countdown.isPaused) {
-		countdown.remainingSeconds = Math.max(0, Math.ceil((countdown.endTime - Date.now()) / 1000));
-		countdown.endTime = null;
-	} else countdown.endTime = Date.now() + countdown.remainingSeconds * 1000;
-	elements.pause.textContent = countdown.isPaused ? 'Resume' : 'Pause';
-	elements.status.textContent = countdown.isPaused ? 'Timer paused.' : 'Timer running...';
-	saveState();
-});
-
 elements.reset.addEventListener('click', () => resetTimer(true));
 elements.select.addEventListener('change', () => { stopTimer(); state.activeId = elements.select.value; render(); saveState(); });
 elements.newCountdown.addEventListener('click', () => {
@@ -313,4 +289,7 @@ elements.notificationButton.addEventListener('click', async () => {
 render();
 const restored = currentCountdown();
 if (restored.mode === 'date' && restored.targetDate) startCountdown();
-else if (restored.mode === 'duration' && restored.remainingSeconds > 0 && !restored.isPaused && restored.endTime) timerId = setInterval(updateCountdown, 1000);
+else if (restored.mode === 'duration' && restored.remainingSeconds > 0) {
+	restored.endTime = restored.endTime || Date.now() + restored.remainingSeconds * 1000;
+	timerId = setInterval(updateCountdown, 1000);
+}
