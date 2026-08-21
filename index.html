@@ -9,7 +9,20 @@
 <body>
 <main>
 <p class="eyebrow">Make time visible</p>
+<div class="heading-row">
+<div>
 <h1 id="event-title">Countdown</h1>
+<p class="countdown-meta" id="countdown-meta">Your next moment, made visible.</p>
+</div>
+<button id="theme-button" class="icon-button" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">D/L</button>
+</div>
+
+<section class="countdown-bar" aria-label="Saved countdowns">
+<label class="sr-only" for="countdown-select">Choose a countdown</label>
+<select id="countdown-select"></select>
+<button id="new-countdown-button" class="small-button" type="button">+ New</button>
+<button id="delete-countdown-button" class="small-button danger-button" type="button">Delete</button>
+</section>
 
 <label class="target-label" for="event-name">Event name</label>
 <input id="event-name" type="text" maxlength="60" placeholder="Name your countdown" aria-describedby="save-status">
@@ -33,6 +46,23 @@
 <input id="duration-input" type="number" min="1" step="1" placeholder="Custom minutes" aria-describedby="status">
 <button id="start-button" type="button">Start</button>
 </div>
+
+<section class="settings-panel" aria-label="Appearance and notification settings">
+<div class="settings-heading">
+<div>
+<p class="section-kicker">Personalize</p>
+<h2>Make it yours</h2>
+</div>
+<button id="notification-button" class="text-button" type="button">Enable notifications</button>
+</div>
+<div class="settings-grid">
+<label>Theme<select id="theme-select"><option value="light">Light</option><option value="dark">Dark</option></select></label>
+<label>Display<select id="display-format"><option value="full">Full labels</option><option value="compact">Compact labels</option><option value="clock">Clock style</option></select></label>
+<label>Accent color<input id="accent-color" type="color" value="#e85d04"></label>
+<label>Background<input id="background-color" type="color" value="#f6f1e8"></label>
+</div>
+<label class="check-row"><input id="sound-toggle" type="checkbox" checked> Play a sound when the timer ends</label>
+</section>
 <div class="presets" aria-label="Timer presets">
 <button class="preset" type="button" data-minutes="5">5 min</button>
 <button class="preset" type="button" data-minutes="10">10 min</button>
@@ -43,10 +73,10 @@
 </div>
 
 <section class="timer" aria-label="Time remaining">
-<div class="unit"><span class="value" id="days">00</span><span class="unit-label">Days</span></div>
-<div class="unit"><span class="value" id="hours">00</span><span class="unit-label">Hours</span></div>
-<div class="unit"><span class="value" id="minutes">00</span><span class="unit-label">Minutes</span></div>
-<div class="unit"><span class="value" id="seconds">00</span><span class="unit-label">Seconds</span></div>
+<div class="unit"><span class="value" id="days">00</span><span class="unit-label" data-short="d">Days</span></div>
+<div class="unit"><span class="value" id="hours">00</span><span class="unit-label" data-short="h">Hours</span></div>
+<div class="unit"><span class="value" id="minutes">00</span><span class="unit-label" data-short="m">Minutes</span></div>
+<div class="unit"><span class="value" id="seconds">00</span><span class="unit-label" data-short="s">Seconds</span></div>
 </section>
 
 <p class="status" id="status" role="status">Choose a target date to begin.</p>
